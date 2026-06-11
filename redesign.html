@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darkup — Redesign Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   DARKUP REDESIGN — PROPOSITION VISUELLE
+   Palette : Noir profond / Cyan neon / Or
+   Style : Ultra-premium, glassmorphism, Apple-level
+   ============================================ */
+
+:root {
+  /* Couleurs principales */
+  --black-deep: #050507;
+  --black-card: #0a0b10;
+  --black-surface: #0e1017;
+  --black-elevated: #13141d;
+  --gray-900: #1a1b26;
+  --gray-800: #24253a;
+  --gray-700: #33344d;
+  --gray-600: #4a4b6a;
+  --gray-500: #6b6d8a;
+  --gray-400: #9496b0;
+  --gray-300: #b8bace;
+  --gray-200: #d4d5e0;
+  --white: #f0f1f7;
+
+  /* Accent Cyan */
+  --cyan: #0bfde1;
+  --cyan-bright: #33ffe8;
+  --cyan-dim: #08c9b4;
+  --cyan-glow: rgba(11, 253, 225, 0.15);
+  --cyan-glow-strong: rgba(11, 253, 225, 0.3);
+
+  /* Accent Or */
+  --gold: #c9a84c;
+  --gold-bright: #f0d078;
+  --gold-dim: #9a7e38;
+  --gold-glow: rgba(201, 168, 76, 0.15);
+
+  /* Gradients */
+  --gradient-cyan: linear-gradient(135deg, #0bfde1, #08c9b4, #066b9f);
+  --gradient-gold: linear-gradient(135deg, #f0d078, #c9a84c, #9a7e38);
+  --gradient-hero: radial-gradient(ellipse at 50% 0%, rgba(11,253,225,0.08) 0%, transparent 60%);
+  --gradient-section: radial-gradient(ellipse at 50% 50%, rgba(11,253,225,0.03) 0%, transparent 70%);
+
+  /* Glass */
+  --glass-bg: rgba(10, 11, 16, 0.6);
+  --glass-border: rgba(11, 253, 225, 0.08);
+  --glass-border-hover: rgba(11, 253, 225, 0.2);
+
+  /* Typography */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Spacing */
+  --section-padding: clamp(80px, 12vh, 160px);
+  --container-width: 1200px;
+  --container-narrow: 900px;
+}
+
+/* ---- RESET & BASE ---- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--black-deep);
+  color: var(--gray-300);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(11, 253, 225, 0.25);
+  color: var(--white);
+}
+
+a { color: var(--cyan); text-decoration: none; transition: all 0.3s ease; }
+a:hover { color: var(--cyan-bright); }
+
+img { max-width: 100%; display: block; }
+
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 48px);
+}
+
+.container--narrow {
+  max-width: var(--container-narrow);
+}
+
+/* ---- ANIMATED BACKGROUND ---- */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(11,253,225,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11,253,225,0.015) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%);
+}
+
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+  animation: orbFloat 20s ease-in-out infinite alternate;
+}
+.bg-orb--cyan {
+  width: 600px; height: 600px;
+  background: rgba(11,253,225,0.04);
+  top: -10%; left: 20%;
+}
+.bg-orb--gold {
+  width: 400px; height: 400px;
+  background: rgba(201,168,76,0.03);
+  top: 30%; right: -5%;
+  animation-delay: -7s;
+}
+.bg-orb--purple {
+  width: 500px; height: 500px;
+  background: rgba(100,60,180,0.03);
+  bottom: 10%; left: -10%;
+  animation-delay: -14s;
+}
+
+@keyframes orbFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 30px) scale(0.95); }
+  100% { transform: translate(10px, -20px) scale(1.02); }
+}
+
+/* ---- SECTION LABELS ---- */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 20px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--cyan);
+}
+
+.section-title {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--white);
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+}
+.section-title em {
+  font-style: normal;
+  background: var(--gradient-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--gray-400);
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+/* ---- SCROLL ANIMATIONS ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 0 clamp(20px, 4vw, 48px);
+  transition: all 0.4s ease;
+}
+.nav.scrolled {
+  background: rgba(5, 5, 7, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(11,253,225,0.06);
+}
+.nav__inner {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.nav__logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--gradient-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(11,253,225,0.3);
+}
+.nav__logo-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+.nav__links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-400);
+  transition: color 0.3s;
+  letter-spacing: 0.01em;
+}
+.nav__links a:hover { color: var(--white); }
+
+.nav__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 24px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black-deep) !important;
+  background: var(--gradient-cyan);
+  letter-spacing: 0.02em;
+  transition: all 0.3s;
+  box-shadow: 0 0 24px rgba(11,253,225,0.2);
+}
+.nav__cta:hover {
+  box-shadow: 0 0 40px rgba(11,253,225,0.4);
+  transform: translateY(-1px);
+}
+
+.nav__hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px;
+}
+.nav__hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+/* Mobile nav */
+@media (max-width: 768px) {
+  .nav__links { display: none; }
+  .nav__hamburger { display: flex; }
+  .nav__links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: rgba(5,5,7,0.95);
+    backdrop-filter: blur(20px);
+    padding: 24px;
+    gap: 20px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 0 80px;
+  overflow: hidden;
+}
+
+.hero__glow {
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(11,253,225,0.08) 0%, rgba(11,253,225,0.02) 40%, transparent 70%);
+  pointer-events: none;
+  animation: heroGlow 8s ease-in-out infinite alternate;
+}
+@keyframes heroGlow {
+  0% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1.15); }
+}
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 8px;
+  border-radius: 100px;
+  background: rgba(11,253,225,0.06);
+  border: 1px solid rgba(11,253,225,0.12);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cyan);
+  margin-bottom: 32px;
+  backdrop-filter: blur(10px);
+}
+.hero__badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(11,253,225,0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(11,253,225,0); }
+}
+
+.hero__title {
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--white);
+  letter-spacing: -0.04em;
+  max-width: 900px;
+  margin: 0 auto 24px;
+}
+.hero__title-gradient {
+  background: var(--gradient-cyan);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__subtitle {
+  font-size: clamp(16px, 2.2vw, 20px);
+  color: var(--gray-400);
+  max-width: 580px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 64px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 32px;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  border: none;
+}
+.btn--primary {
+  color: var(--black-deep);
+  background: var(--gradient-cyan);
+  box-shadow: 0 0 30px rgba(11,253,225,0.25), 0 4px 20px rgba(0,0,0,0.3);
+}
+.btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(11,253,225,0.4), 0 8px 30px rgba(0,0,0,0.4);
+  color: var(--black-deep);
+}
+.btn--secondary {
+  color: var(--white);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+}
+.btn--secondary:hover {
+  border-color: rgba(11,253,225,0.3);
+  background: rgba(11,253,225,0.05);
+  color: var(--white);
+}
+.btn--gold {
+  color: var(--black-deep);
+  background: var(--gradient-gold);
+  box-shadow: 0 0 30px rgba(201,168,76,0.2), 0 4px 20px rgba(0,0,0,0.3);
+}
+.btn--gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(201,168,76,0.35), 0 8px 30px rgba(0,0,0,0.4);
+  color: var(--black-deep);
+}
+
+/* Hero coffret visual */
+.hero__visual {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.hero__coffret {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: 24px;
+  background: linear-gradient(145deg, var(--black-card), var(--black-surface));
+  border: 1px solid rgba(11,253,225,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow:
+    0 0 60px rgba(11,253,225,0.08),
+    0 40px 80px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.hero__coffret::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(11,253,225,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
+}
+
+.coffret-scene {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+.coffret-phone {
+  width: 120px;
+  height: 240px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #1a1b26, #0a0b10);
+  border: 2px solid rgba(255,255,255,0.08);
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.coffret-phone::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 5px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+}
+.coffret-phone-screen {
+  position: absolute;
+  top: 20px;
+  left: 6px;
+  right: 6px;
+  bottom: 20px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #0e1117, #080a0e);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.coffret-phone-logo {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--cyan);
+  letter-spacing: 0.15em;
+}
+.coffret-phone-lock {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+}
+
+.coffret-key {
+  width: 80px;
+  height: 36px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #2a2d38, #1a1c24);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.coffret-key::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(11,253,225,0.3);
+  background: rgba(11,253,225,0.05);
+}
+.coffret-key::after {
+  content: 'Y';
+  position: absolute;
+  right: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-600);
+}
+.coffret-key-usb {
+  position: absolute;
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 10px;
+  background: #3a3d48;
+  border-radius: 0 3px 3px 0;
+}
+
+.coffret-card {
+  width: 80px;
+  height: 50px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+  border: 1px solid rgba(201,168,76,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+
+/* Floating tags around coffret */
+.hero__tags {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.hero__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-400);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.hero__tag-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--cyan);
+}
+
+/* ============================================
+   PROBLEM SECTION
+   ============================================ */
+.problem {
+  position: relative;
+  padding: var(--section-padding) 0;
+}
+.problem__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.problem__visual {
+  position: relative;
+}
+.problem__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.problem__stat {
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  transition: all 0.3s;
+}
+.problem__stat:hover {
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+}
+.problem__stat-value {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.problem__stat-value--red { color: #ff4757; }
+.problem__stat-value--orange { color: #ffa502; }
+.problem__stat-value--cyan { color: var(--cyan); }
+.problem__stat-label {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .problem__grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+/* ============================================
+   SOLUTION SECTION
+   ============================================ */
+.solution {
+  position: relative;
+  padding: var(--section-padding) 0;
+}
+.solution__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 64px;
+}
+.solution__step {
+  position: relative;
+  padding: 40px 32px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(10,11,16,0.8), rgba(10,11,16,0.4));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.solution__step::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.solution__step:hover {
+  border-color: var(--glass-border-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.solution__step:hover::before { opacity: 1; }
+
+.solution__step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(11,253,225,0.08);
+  border: 1px solid rgba(11,253,225,0.15);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 24px;
+}
+.solution__step-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.solution__step-desc {
+  font-size: 14px;
+  color: var(--gray-400);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .solution__steps { grid-template-columns: 1fr; }
+}
+
+/* ============================================
+   COFFRET SECTION
+   ============================================ */
+.coffret {
+  position: relative;
+  padding: var(--section-padding) 0;
+}
+.coffret__showcase {
+  position: relative;
+  margin-top: 64px;
+  padding: 64px;
+  border-radius: 32px;
+  background: linear-gradient(145deg, var(--black-card), var(--black-surface));
+  border: 1px solid rgba(11,253,225,0.06);
+  overflow: hidden;
+}
+.coffret__showcase::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+}
+
+.coffret__items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+.coffret__item {
+  text-align: center;
+  padding: 32px 24px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: all 0.4s;
+}
+.coffret__item:hover {
+  background: rgba(11,253,225,0.03);
+  border-color: rgba(11,253,225,0.1);
+  transform: translateY(-4px);
+}
+.coffret__item-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+.coffret__item-icon--phone {
+  background: linear-gradient(135deg, rgba(11,253,225,0.1), rgba(11,253,225,0.03));
+  border: 1px solid rgba(11,253,225,0.15);
+}
+.coffret__item-icon--key {
+  background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.03));
+  border: 1px solid rgba(201,168,76,0.15);
+}
+.coffret__item-icon--card {
+  background: linear-gradient(135deg, rgba(100,60,180,0.1), rgba(100,60,180,0.03));
+  border: 1px solid rgba(100,60,180,0.15);
+}
+.coffret__item-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.coffret__item-desc {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .coffret__showcase { padding: 32px 20px; }
+  .coffret__items { grid-template-columns: 1fr; }
+}
+
+/* ============================================
+   FEATURES SECTION
+   ============================================ */
+.features {
+  position: relative;
+  padding: var(--section-padding) 0;
+}
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-top: 64px;
+}
+.features__card {
+  position: relative;
+  padding: 36px;
+  border-radius: 20px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.features__card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--cyan-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.features__card:hover {
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+}
+.features__card:hover::after { opacity: 1; }
+
+.features__card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  background: rgba(11,253,225,0.08);
+  border: 1px solid rgba(11,253,225,0.12);
+  color: var(--cyan);
+}
+.features__card-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.features__card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+.features__card-text {
+  font-size: 14px;
+  color: var(--gray-400);
+  line-height: 1.7;
+}
+
+/* Large feature card spanning full width */
+.features__card--large {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.features__card--large .features__card-content {
+  padding-right: 20px;
+}
+.features__card--large .features__card-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Encryption animation visual */
+.encryption-visual {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+.encryption-node {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.encryption-node--sender {
+  background: rgba(11,253,225,0.1);
+  border: 1px solid rgba(11,253,225,0.2);
+}
+.encryption-node--server {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.encryption-node--receiver {
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.2);
+}
+.encryption-line {
+  flex: 1;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--cyan) 0px, var(--cyan) 6px, transparent 6px, transparent 12px);
+  position: relative;
+  overflow: hidden;
+}
+.encryption-line::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -20px;
+  width: 20px;
+  height: 8px;
+  background: var(--cyan);
+  border-radius: 4px;
+  animation: packetMove 2s linear infinite;
+  box-shadow: 0 0 10px var(--cyan);
+}
+@keyframes packetMove {
+  0% { left: -20px; }
+  100% { left: 100%; }
+}
+
+.encryption-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--gray-600);
+  text-align: center;
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .features__grid { grid-template-columns: 1fr; }
+  .features__card--large { grid-template-columns: 1fr; }
+}
+
+/* ============================================
+   SECURITY SECTION
+   ============================================ */
+.security {
+  position: relative;
+  padding: var(--section-padding) 0;
+}
+
+.security__architecture {
+  margin-top: 64px;
+  padding: 48px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, var(--black-card), var(--black-surface));
+  border: 1px solid rgba(11,253,225,0.06);
+  position: relative;
+  overflow: hidden;
+}
+.security__architecture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(11,253,225,0.04) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(201,168,76,0.03) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.security__layers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.security__layer {
+  text-align: center;
+  padding: 28px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.3s;
+}
+.security__layer:hover {
+  background: rgba(11,253,225,0.03);
+  border-color: rgba(11,253,225,0.1);
+}
+.security__layer-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.security__layer-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.security__layer-desc {
+  font-size: 12px;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+
+.security__promises {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+  position: relative;
+  z-index: 1;
+}
+.security__promise {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(11,253,225,0.03);
+  border: 1px solid rgba(11,253,225,0.06);
+}
+.security__promise-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(11,253,225,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--cyan);
+  font-size: 11px;
+}
+.security__promise-text {
+  font-size: 13px;
+  color: var(--gray-300);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .security__architecture { padding: 24px 16px; }
+  .security__layers { grid-template-columns: repeat(2, 1fr); }
+  .security__promises { grid-template-columns: 1fr; }
+}
+
+/* ============================================
+   PRICING SECTION
+   ============================================ */
+.pricing {
+  position: relative;
+  padding: var(--section-padding) 0;
+}
+.pricing__cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 64px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pricing__card {
+  position: relative;
+  padding: 40px 36px;
+  border-radius: 24px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  transition: all 0.4s;
+}
+.pricing__card:hover {
+  transform: translateY(-4px);
+}
+
+.pricing__card--featured {
+  border-color: rgba(201,168,76,0.2);
+  background: linear-gradient(180deg, rgba(201,168,76,0.06), rgba(10,11,16,0.8));
+  box-shadow: 0 0 60px rgba(201,168,76,0.08);
+}
+.pricing__card--featured::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: var(--gradient-gold);
+}
+
+.pricing__card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.15);
+  margin-bottom: 20px;
+}
+
+.pricing__card-name {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.pricing__card-desc {
+  font-size: 14px;
+  color: var(--gray-500);
+  margin-bottom: 24px;
+}
+
+.pricing__card-price {
+  margin-bottom: 32px;
+}
+.pricing__card-amount {
+  font-size: clamp(36px, 5vw, 48px);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1;
+}
+.pricing__card-currency {
+  font-size: 20px;
+  font-weight: 600;
+  vertical-align: super;
+  color: var(--gray-400);
+}
+.pricing__card-period {
+  font-size: 14px;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+.pricing__card-period em {
+  font-style: normal;
+  color: var(--cyan);
+}
+
+.pricing__card-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+.pricing__card-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--gray-300);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.pricing__card-features li:last-child { border-bottom: none; }
+.pricing__card-features li::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(11,253,225,0.1);
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230bfde1' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: 10px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.pricing__note {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+@media (max-width: 768px) {
+  .pricing__cards { grid-template-columns: 1fr; max-width: 480px; }
+}
+
+/* ============================================
+   FAQ SECTION
+   ============================================ */
+.faq {
+  position: relative;
+  padding: var(--section-padding) 0;
+}
+.faq__list {
+  margin-top: 64px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.faq__item {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.faq__question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--white);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-main);
+  transition: color 0.3s;
+  gap: 16px;
+}
+.faq__question:hover { color: var(--cyan); }
+
+.faq__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s;
+  color: var(--gray-500);
+}
+.faq__item.open .faq__icon {
+  background: rgba(11,253,225,0.1);
+  color: var(--cyan);
+  transform: rotate(45deg);
+}
+
+.faq__answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s;
+}
+.faq__item.open .faq__answer {
+  max-height: 300px;
+  padding-bottom: 24px;
+}
+.faq__answer p {
+  font-size: 14px;
+  color: var(--gray-400);
+  line-height: 1.8;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer {
+  position: relative;
+  padding: 64px 0 32px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.footer__logo {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: 0.08em;
+}
+.footer__tagline {
+  font-size: 13px;
+  color: var(--gray-600);
+}
+.footer__links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+.footer__links a {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+.footer__links a:hover { color: var(--white); }
+
+.footer__bottom {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.03);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer__copy {
+  font-size: 12px;
+  color: var(--gray-600);
+}
+.footer__legal {
+  display: flex;
+  gap: 20px;
+}
+.footer__legal a {
+  font-size: 12px;
+  color: var(--gray-600);
+}
+.footer__legal a:hover { color: var(--gray-400); }
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(11,253,225,0.1), transparent);
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+/* ============================================
+   CTA BANNER
+   ============================================ */
+.cta-banner {
+  position: relative;
+  padding: 80px 0;
+  text-align: center;
+  overflow: hidden;
+}
+.cta-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(11,253,225,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cta-banner__title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 16px;
+  letter-spacing: -0.03em;
+}
+.cta-banner__subtitle {
+  font-size: 16px;
+  color: var(--gray-400);
+  margin-bottom: 32px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================
+   MARQUEE
+   ============================================ */
+.marquee {
+  overflow: hidden;
+  padding: 20px 0;
+  border-top: 1px solid rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.marquee__track {
+  display: flex;
+  gap: 48px;
+  animation: marqueeScroll 30s linear infinite;
+  width: max-content;
+}
+.marquee__item {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-600);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.marquee__item::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  opacity: 0.4;
+}
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ============================================
+   MISC UTILITIES
+   ============================================ */
+.text-center { text-align: center; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.relative { position: relative; z-index: 1; }
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--black-deep); }
+::-webkit-scrollbar-thumb { background: var(--gray-800); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gray-700); }
+</style>
+</head>
+<body>
+
+<!-- Background Effects -->
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb--cyan"></div>
+<div class="bg-orb bg-orb--gold"></div>
+<div class="bg-orb bg-orb--purple"></div>
+
+<!-- ============================================
+     NAVIGATION
+     ============================================ -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__logo">
+      <div class="nav__logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#050507" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      DARKUP
+    </a>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="#probleme">Le probleme</a></li>
+      <li><a href="#solution">Solution</a></li>
+      <li><a href="#coffret">Le coffret</a></li>
+      <li><a href="#fonctionnalites">Fonctionnalites</a></li>
+      <li><a href="#securite">Securite</a></li>
+      <li><a href="#tarif">Tarif</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#tarif" class="nav__cta">Commander</a></li>
+    </ul>
+    <div class="nav__hamburger" id="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================
+     HERO
+     ============================================ -->
+<section class="hero" id="hero">
+  <div class="hero__glow"></div>
+  <div class="container text-center relative">
+    <div class="reveal">
+      <div class="hero__badge">
+        <span class="hero__badge-dot"></span>
+        200 places fondateurs disponibles
+      </div>
+    </div>
+
+    <h1 class="hero__title reveal reveal-delay-1">
+      Vos conversations,<br>
+      <span class="hero__title-gradient">verrouillees par une cle</span><br>
+      que vous seul possedez.
+    </h1>
+
+    <p class="hero__subtitle reveal reveal-delay-2">
+      Messagerie et appels chiffres de bout en bout, ancres a une cle de securite physique.
+      Pas de numero, pas d'e-mail. Personne &mdash; pas meme nous &mdash; ne peut entrer.
+    </p>
+
+    <div class="hero__actions reveal reveal-delay-3">
+      <a href="#tarif" class="btn btn--primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Devenir fondateur &mdash; 3 mois offerts
+      </a>
+      <a href="#solution" class="btn btn--secondary">
+        Decouvrir comment ca marche
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+    </div>
+
+    <!-- Coffret Visual -->
+    <div class="hero__visual reveal reveal-delay-4">
+      <div class="hero__coffret">
+        <div class="coffret-scene">
+          <div class="coffret-phone">
+            <div class="coffret-phone-screen">
+              <svg class="coffret-phone-lock" viewBox="0 0 24 24" fill="none" stroke="#0bfde1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span class="coffret-phone-logo">DARKUP</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:24px;">
+            <div class="coffret-key">
+              <div class="coffret-key-usb"></div>
+            </div>
+            <div class="coffret-card">ACTIVATION</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__tags reveal reveal-delay-5">
+      <span class="hero__tag">
+        <svg class="hero__tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Bout en bout
+      </span>
+      <span class="hero__tag">
+        <svg class="hero__tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="11" x2="17" y2="17"/></svg>
+        Sans numero ni e-mail
+      </span>
+      <span class="hero__tag">
+        <svg class="hero__tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Cle physique
+      </span>
+      <span class="hero__tag">
+        <svg class="hero__tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        Aucune porte derobee
+      </span>
+      <span class="hero__tag">
+        <svg class="hero__tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Ephemere par defaut
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee">
+  <div class="marquee__track">
+    <span class="marquee__item">Chiffrement Double Ratchet</span>
+    <span class="marquee__item">Forward Secrecy</span>
+    <span class="marquee__item">Sealed Sender</span>
+    <span class="marquee__item">YubiKey 5C NFC</span>
+    <span class="marquee__item">Secure Enclave</span>
+    <span class="marquee__item">Relais TURN aveugle</span>
+    <span class="marquee__item">Zero donnees stockees</span>
+    <span class="marquee__item">Appairage QR en personne</span>
+    <span class="marquee__item">SDP signe anti-MITM</span>
+    <span class="marquee__item">PIV ECDH P-256</span>
+    <span class="marquee__item">IP masquee</span>
+    <span class="marquee__item">Capture d'ecran detectee</span>
+    <!-- Duplique pour boucle fluide -->
+    <span class="marquee__item">Chiffrement Double Ratchet</span>
+    <span class="marquee__item">Forward Secrecy</span>
+    <span class="marquee__item">Sealed Sender</span>
+    <span class="marquee__item">YubiKey 5C NFC</span>
+    <span class="marquee__item">Secure Enclave</span>
+    <span class="marquee__item">Relais TURN aveugle</span>
+    <span class="marquee__item">Zero donnees stockees</span>
+    <span class="marquee__item">Appairage QR en personne</span>
+    <span class="marquee__item">SDP signe anti-MITM</span>
+    <span class="marquee__item">PIV ECDH P-256</span>
+    <span class="marquee__item">IP masquee</span>
+    <span class="marquee__item">Capture d'ecran detectee</span>
+  </div>
+</div>
+
+<!-- ============================================
+     LE PROBLEME
+     ============================================ -->
+<section class="problem relative" id="probleme">
+  <div class="container">
+    <div class="problem__grid">
+      <div>
+        <span class="section-label reveal">Le probleme</span>
+        <h2 class="section-title reveal reveal-delay-1">
+          Votre vie privee<br><em>n'existe plus.</em>
+        </h2>
+        <p class="section-subtitle reveal reveal-delay-2">
+          Chaque message, chaque appel, chaque photo transite par des serveurs que vous ne
+          controlez pas. Vos conversations sont lues, analysees, monetisees &mdash; ou
+          simplement accessibles a quiconque dispose d'un mandat ou d'une faille.
+        </p>
+        <p class="section-subtitle reveal reveal-delay-3" style="margin-top: 16px;">
+          Les messageries &laquo; securisees &raquo; demandent votre numero, stockent vos
+          metadonnees, et gardent une porte de service &laquo; au cas ou &raquo;.
+          Ce n'est pas de la securite. C'est du theatre.
+        </p>
+      </div>
+      <div class="problem__visual">
+        <div class="problem__stats reveal reveal-delay-2">
+          <div class="problem__stat">
+            <div class="problem__stat-value problem__stat-value--red">2,6 Mrd</div>
+            <div class="problem__stat-label">comptes compromis en 2024</div>
+          </div>
+          <div class="problem__stat">
+            <div class="problem__stat-value problem__stat-value--orange">87%</div>
+            <div class="problem__stat-label">des apps partagent vos donnees avec des tiers</div>
+          </div>
+          <div class="problem__stat">
+            <div class="problem__stat-value problem__stat-value--cyan">0</div>
+            <div class="problem__stat-label">donnees collectees par Darkup</div>
+          </div>
+          <div class="problem__stat">
+            <div class="problem__stat-value">100%</div>
+            <div class="problem__stat-label">des echanges chiffres de bout en bout</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================
+     LA SOLUTION
+     ============================================ -->
+<section class="solution relative" id="solution">
+  <div class="container text-center">
+    <span class="section-label mx-auto reveal" style="justify-content:center;">La solution</span>
+    <h2 class="section-title reveal reveal-delay-1" style="max-width:700px;margin-left:auto;margin-right:auto;">
+      Trois etapes.<br><em>Et c'est a vous.</em>
+    </h2>
+    <p class="section-subtitle mx-auto reveal reveal-delay-2">
+      Pas de compte a creer, pas de donnees a fournir. Votre identite nait dans votre
+      appareil et ne le quitte jamais.
+    </p>
+
+    <div class="solution__steps">
+      <div class="solution__step reveal reveal-delay-1">
+        <div class="solution__step-number">01</div>
+        <h3 class="solution__step-title">Recevez votre cle</h3>
+        <p class="solution__step-desc">
+          Votre YubiKey 5C NFC arrive prete a l'emploi avec votre admission.
+          Compatible NFC et USB-C &mdash; elle fonctionne avec tous les iPhone recents.
+        </p>
+      </div>
+      <div class="solution__step reveal reveal-delay-2">
+        <div class="solution__step-number">02</div>
+        <h3 class="solution__step-title">Enrolez votre identite</h3>
+        <p class="solution__step-desc">
+          Approchez la cle de l'iPhone. Votre identite cryptographique est generee
+          sur l'appareil et scellee dans le materiel. Elle n'existe nulle part ailleurs.
+        </p>
+      </div>
+      <div class="solution__step reveal reveal-delay-3">
+        <div class="solution__step-number">03</div>
+        <h3 class="solution__step-title">Communiquez en toute souverainete</h3>
+        <p class="solution__step-desc">
+          Ajoutez vos contacts par QR en personne, puis echangez &mdash; messages,
+          voix, video &mdash; avec la garantie que seul votre correspondant peut lire.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================
+     LE COFFRET
+     ============================================ -->
+<section class="coffret relative" id="coffret">
+  <div class="container text-center">
+    <span class="section-label mx-auto reveal" style="justify-content:center;">Le coffret</span>
+    <h2 class="section-title reveal reveal-delay-1">
+      Tout ce qu'il faut.<br><em>Rien de plus.</em>
+    </h2>
+    <p class="section-subtitle mx-auto reveal reveal-delay-2">
+      Un coffret premium contenant les trois elements indispensables pour
+      demarrer votre vie privee souveraine.
+    </p>
+
+    <div class="coffret__showcase reveal reveal-delay-3">
+      <div class="coffret__items">
+        <div class="coffret__item">
+          <div class="coffret__item-icon coffret__item-icon--phone">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0bfde1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+              <line x1="12" y1="18" x2="12.01" y2="18"/>
+            </svg>
+          </div>
+          <h3 class="coffret__item-name">Application Darkup</h3>
+          <p class="coffret__item-desc">
+            L'application iOS pre-configuree. Messagerie, appels voix et video,
+            le tout chiffre de bout en bout.
+          </p>
+        </div>
+        <div class="coffret__item">
+          <div class="coffret__item-icon coffret__item-icon--key">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+            </svg>
+          </div>
+          <h3 class="coffret__item-name">YubiKey 5C NFC</h3>
+          <p class="coffret__item-desc">
+            Votre cle de securite physique. Compatible NFC et USB-C.
+            Votre identite ne quitte jamais ce materiel.
+          </p>
+        </div>
+        <div class="coffret__item">
+          <div class="coffret__item-icon coffret__item-icon--card">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7c5cbf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+          </div>
+          <h3 class="coffret__item-name">Carte d'activation</h3>
+          <p class="coffret__item-desc">
+            Votre code unique qui relie votre cle a votre acces infrastructure,
+            sans jamais exposer votre identite.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================
+     FONCTIONNALITES
+     ============================================ -->
+<section class="features relative" id="fonctionnalites">
+  <div class="container">
+    <span class="section-label reveal">Fonctionnalites</span>
+    <h2 class="section-title reveal reveal-delay-1">
+      Concu pour qu'il n'y ait<br><em>rien a voler.</em>
+    </h2>
+    <p class="section-subtitle reveal reveal-delay-2">
+      Chaque brique est pensee pour qu'aucune partie &mdash; ni un pirate, ni un operateur,
+      ni nous &mdash; ne puisse acceder a vos echanges.
+    </p>
+
+    <div class="features__grid">
+      <!-- Large feature: E2E encryption -->
+      <div class="features__card features__card--large reveal">
+        <div class="features__card-content">
+          <div class="features__card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3 class="features__card-title">Chiffrement de bout en bout</h3>
+          <p class="features__card-text">
+            Double Ratchet &mdash; la meme cryptographie que Signal. Chaque message a sa
+            propre cle, jetee aussitot. Une cle compromise ne revele jamais le passe
+            (forward secrecy). Vos appels voix et video sont proteges par SDP signe
+            anti-MITM et transites via un relais TURN aveugle.
+          </p>
+        </div>
+        <div class="features__card-visual">
+          <div class="encryption-visual">
+            <div style="text-align:center">
+              <div class="encryption-node encryption-node--sender">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0bfde1" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="encryption-label">Vous</div>
+            </div>
+            <div style="flex:1">
+              <div class="encryption-line"></div>
+              <div class="encryption-label" style="margin-top:4px;color:var(--cyan)">chiffre</div>
+            </div>
+            <div style="text-align:center">
+              <div class="encryption-node encryption-node--server">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6b6d8a" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+              </div>
+              <div class="encryption-label">Relais aveugle</div>
+            </div>
+            <div style="flex:1">
+              <div class="encryption-line"></div>
+              <div class="encryption-label" style="margin-top:4px;color:var(--gold)">chiffre</div>
+            </div>
+            <div style="text-align:center">
+              <div class="encryption-node encryption-node--receiver">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="encryption-label">Contact</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature cards -->
+      <div class="features__card reveal reveal-delay-1">
+        <div class="features__card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+          </svg>
+        </div>
+        <h3 class="features__card-title">Verrouille par cle physique</h3>
+        <p class="features__card-text">
+          Votre identite vit dans une YubiKey 5C NFC. Sans elle, le contenu reste
+          illisible &mdash; meme votre iPhone deverrouille ne suffit pas. La cle privee
+          ne quitte jamais le materiel.
+        </p>
+      </div>
+
+      <div class="features__card reveal reveal-delay-2">
+        <div class="features__card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <line x1="17" y1="11" x2="17" y2="17"/>
+          </svg>
+        </div>
+        <h3 class="features__card-title">Sans numero, sans e-mail</h3>
+        <p class="features__card-text">
+          Aucune donnee personnelle pour s'inscrire. Vous ajoutez vos contacts
+          en personne, par QR code verifie de visu. L'usurpation est impossible.
+        </p>
+      </div>
+
+      <div class="features__card reveal reveal-delay-3">
+        <div class="features__card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h3 class="features__card-title">Messages ephemeres</h3>
+        <p class="features__card-text">
+          Photos, videos et notes vocales a usage unique : detruites apres lecture.
+          Toute capture d'ecran est detectee et le media instantanement efface.
+        </p>
+      </div>
+
+      <div class="features__card reveal reveal-delay-4">
+        <div class="features__card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <h3 class="features__card-title">Dark Maps</h3>
+        <p class="features__card-text">
+          Partagez votre position ou votre parcours en temps reel avec vos contacts,
+          le tout chiffre. Les donnees ne transitent jamais en clair &mdash; meme pas
+          pour le fond de carte.
+        </p>
+      </div>
+
+      <div class="features__card reveal reveal-delay-1">
+        <div class="features__card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/>
+            <line x1="23" y1="1" x2="1" y2="23"/>
+          </svg>
+        </div>
+        <h3 class="features__card-title">Appels voix et video</h3>
+        <p class="features__card-text">
+          Appels chiffres de bout en bout via un relais TURN. Votre IP est masquee,
+          le relais ne voit que des enveloppes scellees. Meme en ecoute active,
+          le flux reste indechiffrable.
+        </p>
+      </div>
+
+      <div class="features__card reveal reveal-delay-2">
+        <div class="features__card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+          </svg>
+        </div>
+        <h3 class="features__card-title">Aucune recuperation</h3>
+        <p class="features__card-text">
+          Pas de porte derobee, pas de sauvegarde recuperable. Perdre sa cle, c'est
+          perdre son identite. C'est exigeant &mdash; c'est aussi la seule vraie garantie.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================
+     SECURITE
+     ============================================ -->
+<section class="security relative" id="securite">
+  <div class="container text-center">
+    <span class="section-label mx-auto reveal" style="justify-content:center;">Architecture</span>
+    <h2 class="section-title reveal reveal-delay-1">
+      Quatre couches.<br><em>Zero confiance.</em>
+    </h2>
+    <p class="section-subtitle mx-auto reveal reveal-delay-2">
+      L'architecture de Darkup est concue sur le principe du &laquo; zero trust &raquo; :
+      chaque couche est independante, et aucune ne detient assez d'information pour
+      compromettre vos echanges.
+    </p>
+
+    <div class="security__architecture reveal reveal-delay-3">
+      <div class="security__layers">
+        <div class="security__layer">
+          <div class="security__layer-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0bfde1" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <div class="security__layer-name">Appareil</div>
+          <div class="security__layer-desc">Secure Enclave, biometrie, chiffrement local AES-256</div>
+        </div>
+        <div class="security__layer">
+          <div class="security__layer-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+          </div>
+          <div class="security__layer-name">Cle physique</div>
+          <div class="security__layer-desc">PIV ECDH P-256, NFC + USB-C, cle non extractible</div>
+        </div>
+        <div class="security__layer">
+          <div class="security__layer-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7c5cbf" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="security__layer-name">Protocole</div>
+          <div class="security__layer-desc">Double Ratchet, forward secrecy, sealed sender, SDP signe</div>
+        </div>
+        <div class="security__layer">
+          <div class="security__layer-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6b6d8a" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+          </div>
+          <div class="security__layer-name">Infrastructure</div>
+          <div class="security__layer-desc">Relais TURN aveugle, signaling ephemere, zero logs</div>
+        </div>
+      </div>
+
+      <div class="security__promises">
+        <div class="security__promise">
+          <div class="security__promise-check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="security__promise-text">Aucune donnee personnelle collectee ni stockee sur nos serveurs</div>
+        </div>
+        <div class="security__promise">
+          <div class="security__promise-check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="security__promise-text">Le serveur ne connait ni le contenu, ni l'expediteur, ni le destinataire</div>
+        </div>
+        <div class="security__promise">
+          <div class="security__promise-check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="security__promise-text">Appairage TOFU en personne &mdash; impossible de se faire usurper</div>
+        </div>
+        <div class="security__promise">
+          <div class="security__promise-check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="security__promise-text">IP masquee via relais TURN &mdash; geolocalisation impossible</div>
+        </div>
+        <div class="security__promise">
+          <div class="security__promise-check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="security__promise-text">Captures d'ecran detectees, medias detruits instantanement</div>
+        </div>
+        <div class="security__promise">
+          <div class="security__promise-check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="security__promise-text">Aucune porte derobee &mdash; meme nous ne pouvons pas acceder a vos echanges</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================
+     TARIF
+     ============================================ -->
+<section class="pricing relative" id="tarif">
+  <div class="container text-center">
+    <span class="section-label mx-auto reveal" style="justify-content:center;">Tarif</span>
+    <h2 class="section-title reveal reveal-delay-1">
+      3 mois offerts.<br><em>Sans engagement.</em>
+    </h2>
+    <p class="section-subtitle mx-auto reveal reveal-delay-2">
+      Un cout d'entree unique qui couvre votre cle physique, puis trois mois gratuits
+      pour tout essayer. Ensuite, un abonnement mensuel pour l'infrastructure.
+    </p>
+
+    <div class="pricing__cards">
+      <div class="pricing__card reveal reveal-delay-1">
+        <h3 class="pricing__card-name">Admission</h3>
+        <p class="pricing__card-desc">Votre point d'entree dans l'ecosysteme Darkup.</p>
+        <div class="pricing__card-price">
+          <div class="pricing__card-amount">
+            <span class="pricing__card-currency">&euro;</span>79,90
+          </div>
+          <div class="pricing__card-period">paiement unique</div>
+        </div>
+        <ul class="pricing__card-features">
+          <li>Cle de securite YubiKey 5C NFC incluse</li>
+          <li>Compatible, testee, prete a enroler</li>
+          <li>Carte d'activation personnelle</li>
+          <li>Votre identite souveraine, a vous</li>
+        </ul>
+        <a href="#" class="btn btn--secondary" style="width:100%;justify-content:center;">Commander &mdash; 79,90 &euro;</a>
+      </div>
+
+      <div class="pricing__card pricing__card--featured reveal reveal-delay-2">
+        <div class="pricing__card-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#c9a84c" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Offre fondateur &middot; 200 premiers
+        </div>
+        <h3 class="pricing__card-name">Abonnement</h3>
+        <p class="pricing__card-desc">Acces complet a l'infrastructure chiffree.</p>
+        <div class="pricing__card-price">
+          <div class="pricing__card-amount" style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
+            <span style="font-size:16px;color:var(--cyan);font-weight:600;">3 mois gratuits</span>
+          </div>
+          <div class="pricing__card-period" style="margin-top:8px;">
+            puis <em>9,90 &euro;/mois a vie</em>
+          </div>
+        </div>
+        <ul class="pricing__card-features">
+          <li>Prix fondateur verrouille a vie</li>
+          <li>Messagerie chiffree E2E</li>
+          <li>Appels voix et video chiffres</li>
+          <li>Dark Maps — position chiffree</li>
+          <li>Sans engagement, resiliable a tout moment</li>
+        </ul>
+        <a href="#" class="btn btn--gold" style="width:100%;justify-content:center;">Devenir fondateur &mdash; 9,90 &euro;/mois</a>
+      </div>
+    </div>
+
+    <p class="pricing__note reveal">
+      Une fois les 200 places fondateurs prises : 14,90 &euro;/mois.
+    </p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================
+     FAQ
+     ============================================ -->
+<section class="faq relative" id="faq">
+  <div class="container text-center">
+    <span class="section-label mx-auto reveal" style="justify-content:center;">FAQ</span>
+    <h2 class="section-title reveal reveal-delay-1">
+      Ce qu'on nous<br><em>demande le plus.</em>
+    </h2>
+  </div>
+  <div class="container container--narrow">
+    <div class="faq__list">
+      <div class="faq__item reveal">
+        <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+          Que se passe-t-il si je perds ma cle ?
+          <span class="faq__icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button>
+        <div class="faq__answer">
+          <p>Votre identite devient definitivement inaccessible. C'est volontaire : il n'existe aucune porte derobee ni sauvegarde recuperable. En contrepartie, personne ne pourra jamais usurper votre identite, meme en saisissant votre telephone.</p>
+        </div>
+      </div>
+
+      <div class="faq__item reveal reveal-delay-1">
+        <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+          Darkup peut-il lire mes messages ?
+          <span class="faq__icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button>
+        <div class="faq__answer">
+          <p>Non. Tout est chiffre de bout en bout et nos serveurs ne transportent que des enveloppes scellees &mdash; sans le contenu, sans savoir qui ecrit. Nous n'avons techniquement aucun moyen d'y acceder.</p>
+        </div>
+      </div>
+
+      <div class="faq__item reveal reveal-delay-2">
+        <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+          Pourquoi payer alors que d'autres apps sont gratuites ?
+          <span class="faq__icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button>
+        <div class="faq__answer">
+          <p>Parce que vous n'etes pas le produit. Pas de publicite, pas de revente de donnees, pas de collecte. Votre abonnement finance une infrastructure souveraine, et votre admission couvre une vraie cle de securite physique.</p>
+        </div>
+      </div>
+
+      <div class="faq__item reveal reveal-delay-3">
+        <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+          Faut-il un numero de telephone ou un e-mail ?
+          <span class="faq__icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button>
+        <div class="faq__answer">
+          <p>Non, ni l'un ni l'autre. Aucune donnee personnelle n'est requise pour utiliser Darkup. L'appairage se fait en personne, par QR code.</p>
+        </div>
+      </div>
+
+      <div class="faq__item reveal reveal-delay-4">
+        <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+          Puis-je resilier ?
+          <span class="faq__icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button>
+        <div class="faq__answer">
+          <p>Oui, a tout moment et sans engagement. Vous gardez votre cle et votre identite. Couper l'abonnement coupe seulement l'acces a l'infrastructure.</p>
+        </div>
+      </div>
+
+      <div class="faq__item reveal reveal-delay-5">
+        <button class="faq__question" onclick="this.parentElement.classList.toggle('open')">
+          Suis-je rembourse si je change d'avis ?
+          <span class="faq__icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+        </button>
+        <div class="faq__answer">
+          <p>Vous disposez d'un droit de retractation de 14 jours sur l'admission, dans les conditions prevues par les CGV (la cle expediee fait l'objet de regles particulieres).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ============================================
+     CTA BANNER
+     ============================================ -->
+<section class="cta-banner relative">
+  <div class="container">
+    <h2 class="cta-banner__title reveal">
+      L'inviolabilite passe<br>avant le confort.
+    </h2>
+    <p class="cta-banner__subtitle reveal reveal-delay-1">
+      Nous avons fait le choix radical de ne tenir aucun moyen d'acceder a votre identite.
+      C'est la seule facon d'etre reellement a l'abri.
+    </p>
+    <div class="reveal reveal-delay-2">
+      <a href="#tarif" class="btn btn--primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Devenir fondateur
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer class="footer relative">
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <div class="footer__logo">DARKUP</div>
+        <div class="footer__tagline">Messagerie chiffree de bout en bout &middot; Aucune donnee personnelle collectee</div>
+      </div>
+      <ul class="footer__links">
+        <li><a href="#securite">Securite</a></li>
+        <li><a href="#fonctionnalites">Fonctionnalites</a></li>
+        <li><a href="#tarif">Tarif</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="mailto:contact@gest-ia.com">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer__bottom">
+      <div class="footer__copy">
+        Edite par GEST-IA &middot; 60 rue Francois 1er, 75008 Paris &middot; &copy; 2026 Darkup
+      </div>
+      <div class="footer__legal">
+        <a href="#">CGV</a>
+        <a href="#">Mentions legales</a>
+        <a href="#">Confidentialite</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+// ---- Navbar scroll effect ----
+const nav = document.getElementById('nav');
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const currentScroll = window.scrollY;
+  if (currentScroll > 50) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+  lastScroll = currentScroll;
+}, { passive: true });
+
+// ---- Scroll reveal ----
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -40px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ---- Smooth scroll for anchor links ----
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      const navHeight = 72;
+      const targetPosition = target.getBoundingClientRect().top + window.scrollY - navHeight;
+      window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+      // Close mobile nav if open
+      document.getElementById('navLinks').classList.remove('open');
+    }
+  });
+});
+
+// ---- Parallax on hero glow ----
+window.addEventListener('mousemove', (e) => {
+  const glow = document.querySelector('.hero__glow');
+  if (glow) {
+    const x = (e.clientX / window.innerWidth - 0.5) * 30;
+    const y = (e.clientY / window.innerHeight - 0.5) * 30;
+    glow.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px)`;
+  }
+}, { passive: true });
+</script>
+</body>
+</html>
