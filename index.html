@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DARKUP - Experience 3D Premium</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#000;overflow:hidden;font-family:'Helvetica Neue',Arial,sans-serif;color:#fff;cursor:default}
+  #canvas-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+  canvas{display:block}
+
+  /* Loading */
+  #loader{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .8s}
+  #loader.hidden{opacity:0;pointer-events:none}
+  #loader-logo{font-size:2.4rem;letter-spacing:.6em;font-weight:200;color:#0bfde1;margin-bottom:2rem}
+  #loader-bar-bg{width:200px;height:2px;background:rgba(255,255,255,.1);border-radius:1px;overflow:hidden}
+  #loader-bar{width:0%;height:100%;background:linear-gradient(90deg,#0bfde1,#0bfde1);transition:width .3s}
+
+  /* HUD */
+  #hud{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
+  #brand{position:absolute;top:2.5rem;left:3rem;font-size:1.1rem;letter-spacing:.5em;font-weight:200;opacity:.7}
+  #tagline{position:absolute;bottom:3rem;left:3rem;font-size:.75rem;letter-spacing:.2em;opacity:.4;text-transform:uppercase}
+
+  /* Mode buttons */
+  #modes{position:absolute;top:50%;right:2.5rem;transform:translateY(-50%);display:flex;flex-direction:column;gap:1rem;pointer-events:all}
+  .mode-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;padding:.6rem 1.2rem;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);min-width:120px;text-align:center}
+  .mode-btn:hover,.mode-btn.active{border-color:#0bfde1;color:#0bfde1;background:rgba(11,253,225,.06)}
+
+  /* Info panel */
+  #info-panel{position:absolute;bottom:3rem;right:2.5rem;max-width:280px;pointer-events:all;opacity:0;transform:translateY(10px);transition:all .5s}
+  #info-panel.visible{opacity:1;transform:translateY(0)}
+  #info-panel h3{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:#0bfde1;margin-bottom:.5rem}
+  #info-panel p{font-size:.72rem;line-height:1.7;opacity:.6;font-weight:300}
+
+  /* Center label */
+  #center-label{position:absolute;top:55%;left:50%;transform:translate(-50%,-50%);text-align:center;opacity:0;transition:opacity .6s;pointer-events:none}
+  #center-label.visible{opacity:1}
+  #center-label h2{font-size:1.8rem;letter-spacing:.4em;font-weight:100;margin-bottom:.5rem}
+  #center-label span{font-size:.65rem;letter-spacing:.3em;opacity:.4;text-transform:uppercase}
+
+  /* Specs */
+  #specs-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity .5s}
+  #specs-overlay.visible{opacity:1}
+  .spec-line{position:absolute;font-size:.55rem;letter-spacing:.15em;opacity:.6;text-transform:uppercase}
+  .spec-line::before{content:'';position:absolute;width:30px;height:1px;background:#0bfde1;opacity:.4}
+  .spec-l{right:55%;top:30%}.spec-l::before{right:-40px;top:50%}
+  .spec-r{left:55%;top:25%}.spec-r::before{left:-40px;top:50%}
+  .spec-r2{left:58%;top:55%}.spec-r2::before{left:-40px;top:50%}
+  .spec-l2{right:55%;top:60%}.spec-l2::before{right:-40px;top:50%}
+  .spec-c{left:50%;top:78%;transform:translateX(-50%)}
+
+  /* Particles counter */
+  #perf{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);font-size:.5rem;letter-spacing:.15em;opacity:.2}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div id="loader-logo">DARKUP</div>
+  <div id="loader-bar-bg"><div id="loader-bar"></div></div>
+</div>
+
+<div id="canvas-container"></div>
+
+<div id="hud">
+  <div id="brand">DARKUP</div>
+
+  <div id="modes">
+    <button class="mode-btn active" data-mode="cinema">Cinema</button>
+    <button class="mode-btn" data-mode="explorer">Explorer</button>
+    <button class="mode-btn" data-mode="exploded">Vue eclatee</button>
+    <button class="mode-btn" data-mode="open">Ouvrir</button>
+  </div>
+
+  <div id="info-panel">
+    <h3>Chiffrement E2E</h3>
+    <p>Coffret DARKUP — identite protegee par cle physique YubiKey. Aucune porte derobee, aucune recuperation possible. Par conception.</p>
+  </div>
+
+  <div id="center-label">
+    <h2>DARKUP</h2>
+    <span>Experience 3D Premium</span>
+  </div>
+
+  <div id="specs-overlay">
+    <div class="spec-line spec-l">Aluminium anodise noir</div>
+    <div class="spec-line spec-r">Chiffrement AES-256 + X25519</div>
+    <div class="spec-line spec-r2">YubiKey 5C NFC integree</div>
+    <div class="spec-line spec-l2">Double Ratchet Protocol</div>
+    <div class="spec-line spec-c">Zero Trust Architecture</div>
+  </div>
+
+  <div id="tagline">ZERO KNOWLEDGE &middot; ZERO BACKDOOR &middot; ZERO COMPROMISE</div>
+  <div id="perf"></div>
+</div>
+
+<!-- Three.js r128 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Post-processing -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<!-- OrbitControls -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+(function(){
+  'use strict';
+
+  // ===== CONFIG =====
+  const CYAN = 0x0bfde1;
+  const CYAN_HEX = '#0bfde1';
+  const BG = 0x000000;
+  const BOX_W = 2.4, BOX_H = 3.2, BOX_D = 0.8;
+  const LID_THICKNESS = 0.15;
+
+  let currentMode = 'cinema';
+  let scene, camera, renderer, composer, controls;
+  let boxGroup, lidGroup, baseGroup, bodyGroup;
+  let particles, particlePositions;
+  let clock, animTime = 0;
+  let targetCamPos = new THREE.Vector3(0, 2, 6);
+  let targetLookAt = new THREE.Vector3(0, 0.8, 0);
+  let currentLookAt = new THREE.Vector3(0, 0.8, 0);
+  let lidAngle = 0, targetLidAngle = 0;
+  let explodeFactor = 0, targetExplode = 0;
+  let bloomPass;
+
+  // ===== LOADING =====
+  const loaderBar = document.getElementById('loader-bar');
+  const loader = document.getElementById('loader');
+  let loadProgress = 0;
+
+  function updateLoader(pct) {
+    loadProgress = Math.max(loadProgress, pct);
+    loaderBar.style.width = loadProgress + '%';
+    if (loadProgress >= 100) {
+      setTimeout(() => {
+        loader.classList.add('hidden');
+        showCenterLabel();
+      }, 400);
+    }
+  }
+
+  // ===== INIT =====
+  function init() {
+    clock = new THREE.Clock();
+    updateLoader(10);
+
+    // Scene
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(BG);
+    scene.fog = new THREE.FogExp2(BG, 0.04);
+
+    // Camera
+    camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 2, 6);
+    updateLoader(20);
+
+    // Renderer
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+    updateLoader(30);
+
+    // Post-processing
+    composer = new THREE.EffectComposer(renderer);
+    const renderPass = new THREE.RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
+    bloomPass = new THREE.UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.8, 0.4, 0.85
+    );
+    composer.addPass(bloomPass);
+    updateLoader(40);
+
+    // Controls (explorer mode)
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 3;
+    controls.maxDistance = 12;
+    controls.target.set(0, 0.8, 0);
+    controls.enabled = false; // disabled in cinema mode
+    controls.enablePan = false;
+    updateLoader(50);
+
+    // Build scene
+    createLights();
+    updateLoader(60);
+    createBox();
+    updateLoader(70);
+    createPlatform();
+    updateLoader(80);
+    createParticles();
+    updateLoader(90);
+    createFloorGrid();
+
+    // Events
+    window.addEventListener('resize', onResize);
+    setupModeButtons();
+
+    updateLoader(100);
+    animate();
+  }
+
+  // ===== LIGHTS =====
+  function createLights() {
+    // Ambient
+    const ambient = new THREE.AmbientLight(0xffffff, 0.15);
+    scene.add(ambient);
+
+    // Main key light
+    const key = new THREE.DirectionalLight(0xffffff, 0.8);
+    key.position.set(5, 8, 5);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.near = 0.5;
+    key.shadow.camera.far = 30;
+    key.shadow.camera.left = -5;
+    key.shadow.camera.right = 5;
+    key.shadow.camera.top = 5;
+    key.shadow.camera.bottom = -5;
+    key.shadow.bias = -0.0001;
+    scene.add(key);
+
+    // Cyan rim light
+    const rim = new THREE.DirectionalLight(CYAN, 0.5);
+    rim.position.set(-3, 4, -2);
+    scene.add(rim);
+
+    // Fill
+    const fill = new THREE.DirectionalLight(0x4466ff, 0.2);
+    fill.position.set(-5, 2, 4);
+    scene.add(fill);
+
+    // Cyan point light for glow
+    const glow = new THREE.PointLight(CYAN, 1.5, 8);
+    glow.position.set(0, 1.5, 2);
+    scene.add(glow);
+
+    // Bottom accent
+    const bottomLight = new THREE.PointLight(CYAN, 0.4, 5);
+    bottomLight.position.set(0, -0.5, 0);
+    scene.add(bottomLight);
+  }
+
+  // ===== BOX (COFFRET) =====
+  function createBox() {
+    boxGroup = new THREE.Group();
+    boxGroup.position.y = 0.6;
+    scene.add(boxGroup);
+
+    // Materials
+    const boxMat = new THREE.MeshPhysicalMaterial({
+      color: 0x0a0a0a,
+      metalness: 0.9,
+      roughness: 0.15,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.05,
+      reflectivity: 1,
+      envMapIntensity: 1.5,
+    });
+
+    const innerMat = new THREE.MeshPhysicalMaterial({
+      color: 0x050505,
+      metalness: 0.3,
+      roughness: 0.8,
+    });
+
+    const edgeMat = new THREE.MeshPhysicalMaterial({
+      color: CYAN,
+      metalness: 0.8,
+      roughness: 0.2,
+      emissive: CYAN,
+      emissiveIntensity: 0.3,
+    });
+
+    // --- BODY (bottom part) ---
+    bodyGroup = new THREE.Group();
+    boxGroup.add(bodyGroup);
+
+    // Body outer shell
+    const bodyGeo = new THREE.BoxGeometry(BOX_W, BOX_H - LID_THICKNESS, BOX_D);
+    const body = new THREE.Mesh(bodyGeo, boxMat);
+    body.position.y = (BOX_H - LID_THICKNESS) / 2;
+    body.castShadow = true;
+    body.receiveShadow = true;
+    bodyGroup.add(body);
+
+    // Body inner (slightly recessed top)
+    const innerGeo = new THREE.BoxGeometry(BOX_W - 0.1, 0.05, BOX_D - 0.1);
+    const inner = new THREE.Mesh(innerGeo, innerMat);
+    inner.position.y = BOX_H - LID_THICKNESS + 0.02;
+    bodyGroup.add(inner);
+
+    // Edge accents - bottom body
+    const edgeGeo = new THREE.BoxGeometry(BOX_W + 0.02, 0.015, BOX_D + 0.02);
+    const bottomEdge = new THREE.Mesh(edgeGeo, edgeMat);
+    bottomEdge.position.y = 0.01;
+    bodyGroup.add(bottomEdge);
+
+    const midEdge = new THREE.Mesh(edgeGeo.clone(), edgeMat);
+    midEdge.position.y = (BOX_H - LID_THICKNESS);
+    bodyGroup.add(midEdge);
+
+    // Side cyan lines (vertical accents)
+    const sideLineGeo = new THREE.BoxGeometry(0.01, BOX_H - LID_THICKNESS, 0.01);
+    for (let i = 0; i < 4; i++) {
+      const line = new THREE.Mesh(sideLineGeo, edgeMat);
+      const sx = (i < 2 ? -1 : 1) * (BOX_W / 2 + 0.005);
+      const sz = (i % 2 === 0 ? -1 : 1) * (BOX_D / 2 + 0.005);
+      line.position.set(sx, (BOX_H - LID_THICKNESS) / 2, sz);
+      bodyGroup.add(line);
+    }
+
+    // DARKUP text on front face (embossed strip)
+    const labelGeo = new THREE.BoxGeometry(1.6, 0.01, 0.005);
+    const labelMat = new THREE.MeshPhysicalMaterial({
+      color: CYAN,
+      emissive: CYAN,
+      emissiveIntensity: 0.6,
+      metalness: 1,
+      roughness: 0.1,
+    });
+    const label = new THREE.Mesh(labelGeo, labelMat);
+    label.position.set(0, BOX_H * 0.45, BOX_D / 2 + 0.003);
+    label.rotation.x = Math.PI / 2;
+    bodyGroup.add(label);
+
+    // Small accent dots on front
+    const dotGeo = new THREE.SphereGeometry(0.02, 8, 8);
+    for (let i = 0; i < 5; i++) {
+      const dot = new THREE.Mesh(dotGeo, edgeMat);
+      dot.position.set(-0.6 + i * 0.3, BOX_H * 0.45, BOX_D / 2 + 0.01);
+      bodyGroup.add(dot);
+    }
+
+    // --- LID (top part) ---
+    lidGroup = new THREE.Group();
+    lidGroup.position.y = BOX_H - LID_THICKNESS;
+    boxGroup.add(lidGroup);
+
+    // Pivot point at back edge
+    const lidPivot = new THREE.Group();
+    lidPivot.position.set(0, 0, -BOX_D / 2);
+    lidGroup.add(lidPivot);
+
+    const lidGeo = new THREE.BoxGeometry(BOX_W, LID_THICKNESS, BOX_D);
+    const lid = new THREE.Mesh(lidGeo, boxMat);
+    lid.position.set(0, LID_THICKNESS / 2, BOX_D / 2);
+    lid.castShadow = true;
+    lidPivot.add(lid);
+
+    // Lid top accent line
+    const lidEdge = new THREE.Mesh(edgeGeo.clone(), edgeMat);
+    lidEdge.position.set(0, LID_THICKNESS + 0.005, BOX_D / 2);
+    lidPivot.add(lidEdge);
+
+    // Lid inner symbol (visible when open)
+    const symbolGeo = new THREE.RingGeometry(0.15, 0.2, 6);
+    const symbolMat = new THREE.MeshBasicMaterial({ color: CYAN, side: THREE.DoubleSide });
+    const symbol = new THREE.Mesh(symbolGeo, symbolMat);
+    symbol.position.set(0, 0.001, BOX_D / 2);
+    symbol.rotation.x = Math.PI / 2;
+    lidPivot.add(symbol);
+
+    // --- Inner compartment (visible when open) ---
+    const compartGeo = new THREE.BoxGeometry(BOX_W - 0.15, BOX_H * 0.6, BOX_D - 0.15);
+    const compartment = new THREE.Mesh(compartGeo, new THREE.MeshPhysicalMaterial({
+      color: 0x080808,
+      metalness: 0.2,
+      roughness: 0.9,
+    }));
+    compartment.position.y = BOX_H * 0.5;
+    bodyGroup.add(compartment);
+
+    // YubiKey placeholder inside
+    const keyGeo = new THREE.BoxGeometry(0.8, 0.05, 0.35);
+    const keyMat = new THREE.MeshPhysicalMaterial({
+      color: 0x111111,
+      metalness: 0.7,
+      roughness: 0.3,
+      emissive: CYAN,
+      emissiveIntensity: 0.15,
+    });
+    const yubikey = new THREE.Mesh(keyGeo, keyMat);
+    yubikey.position.set(0, BOX_H * 0.82, 0);
+    bodyGroup.add(yubikey);
+
+    // Key connector accent
+    const connGeo = new THREE.BoxGeometry(0.15, 0.05, 0.08);
+    const conn = new THREE.Mesh(connGeo, edgeMat);
+    conn.position.set(0.48, BOX_H * 0.82, 0);
+    bodyGroup.add(conn);
+
+    // Environment map (simple cube)
+    const envScene = new THREE.Scene();
+    const envCam = new THREE.CubeCamera(0.1, 100, new THREE.WebGLCubeRenderTarget(256));
+    envScene.background = new THREE.Color(0x050510);
+    const envLight = new THREE.PointLight(CYAN, 2, 50);
+    envLight.position.set(0, 5, 0);
+    envScene.add(envLight);
+    envCam.position.set(0, 1, 0);
+    envCam.update(renderer, envScene);
+    boxMat.envMap = envCam.renderTarget.texture;
+  }
+
+  // ===== PLATFORM =====
+  function createPlatform() {
+    baseGroup = new THREE.Group();
+    scene.add(baseGroup);
+
+    // Reflective disc
+    const discGeo = new THREE.CylinderGeometry(2.5, 2.5, 0.06, 64);
+    const discMat = new THREE.MeshPhysicalMaterial({
+      color: 0x050505,
+      metalness: 1,
+      roughness: 0.05,
+      clearcoat: 1,
+      clearcoatRoughness: 0.02,
+      reflectivity: 1,
+    });
+    const disc = new THREE.Mesh(discGeo, discMat);
+    disc.position.y = -0.03;
+    disc.receiveShadow = true;
+    baseGroup.add(disc);
+
+    // Outer ring
+    const ringGeo = new THREE.TorusGeometry(2.5, 0.015, 8, 128);
+    const ringMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.5 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.01;
+    baseGroup.add(ring);
+
+    // Inner ring
+    const ring2 = new THREE.Mesh(
+      new THREE.TorusGeometry(1.8, 0.008, 8, 128),
+      new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.25 })
+    );
+    ring2.rotation.x = -Math.PI / 2;
+    ring2.position.y = 0.01;
+    baseGroup.add(ring2);
+
+    // Radial lines
+    const radialMat = new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.15 });
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      const lineGeo = new THREE.BoxGeometry(0.003, 0.001, 0.7);
+      const line = new THREE.Mesh(lineGeo, radialMat);
+      line.position.set(
+        Math.sin(angle) * 2.15,
+        0.01,
+        Math.cos(angle) * 2.15
+      );
+      line.rotation.y = -angle;
+      baseGroup.add(line);
+    }
+
+    // Tick marks
+    for (let i = 0; i < 60; i++) {
+      const angle = (i / 60) * Math.PI * 2;
+      const len = i % 5 === 0 ? 0.15 : 0.06;
+      const tickGeo = new THREE.BoxGeometry(0.002, 0.001, len);
+      const tick = new THREE.Mesh(tickGeo, new THREE.MeshBasicMaterial({
+        color: CYAN, transparent: true, opacity: i % 5 === 0 ? 0.4 : 0.15
+      }));
+      tick.position.set(
+        Math.sin(angle) * 2.48,
+        0.01,
+        Math.cos(angle) * 2.48
+      );
+      tick.rotation.y = -angle;
+      baseGroup.add(tick);
+    }
+  }
+
+  // ===== PARTICLES =====
+  function createParticles() {
+    const count = 2000;
+    const geo = new THREE.BufferGeometry();
+    particlePositions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+
+    const cyanColor = new THREE.Color(CYAN);
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+      const radius = 3 + Math.random() * 8;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = (Math.random() - 0.5) * Math.PI;
+
+      particlePositions[i3] = Math.cos(phi) * Math.sin(theta) * radius;
+      particlePositions[i3 + 1] = Math.sin(phi) * radius * 0.5 + 1;
+      particlePositions[i3 + 2] = Math.cos(phi) * Math.cos(theta) * radius;
+
+      const mixFactor = Math.random();
+      colors[i3] = THREE.MathUtils.lerp(1, cyanColor.r, mixFactor);
+      colors[i3 + 1] = THREE.MathUtils.lerp(1, cyanColor.g, mixFactor);
+      colors[i3 + 2] = THREE.MathUtils.lerp(1, cyanColor.b, mixFactor);
+    }
+
+    geo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const mat = new THREE.PointsMaterial({
+      size: 0.015,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.6,
+      sizeAttenuation: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+
+    particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+  }
+
+  // ===== FLOOR GRID =====
+  function createFloorGrid() {
+    const gridHelper = new THREE.GridHelper(30, 60, CYAN, CYAN);
+    gridHelper.material.opacity = 0.03;
+    gridHelper.material.transparent = true;
+    gridHelper.position.y = -0.05;
+    scene.add(gridHelper);
+
+    // Additional sparser grid
+    const grid2 = new THREE.GridHelper(30, 15, CYAN, CYAN);
+    grid2.material.opacity = 0.06;
+    grid2.material.transparent = true;
+    grid2.position.y = -0.04;
+    scene.add(grid2);
+  }
+
+  // ===== MODES =====
+  function setMode(mode) {
+    currentMode = mode;
+
+    // Update buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+
+    // Hide center label
+    document.getElementById('center-label').classList.remove('visible');
+    const infoPanel = document.getElementById('info-panel');
+    const specsOverlay = document.getElementById('specs-overlay');
+
+    switch (mode) {
+      case 'cinema':
+        controls.enabled = false;
+        targetCamPos.set(0, 2, 6);
+        targetLookAt.set(0, 0.8, 0);
+        targetLidAngle = 0;
+        targetExplode = 0;
+        bloomPass.strength = 0.8;
+        infoPanel.classList.add('visible');
+        specsOverlay.classList.remove('visible');
+        break;
+
+      case 'explorer':
+        controls.enabled = true;
+        targetLidAngle = 0;
+        targetExplode = 0;
+        bloomPass.strength = 0.6;
+        infoPanel.classList.remove('visible');
+        specsOverlay.classList.remove('visible');
+        break;
+
+      case 'exploded':
+        controls.enabled = true;
+        targetLidAngle = 0;
+        targetExplode = 1;
+        bloomPass.strength = 1.0;
+        infoPanel.classList.remove('visible');
+        specsOverlay.classList.add('visible');
+        break;
+
+      case 'open':
+        controls.enabled = false;
+        targetCamPos.set(0, 4, 4);
+        targetLookAt.set(0, 1.5, 0);
+        targetLidAngle = -Math.PI * 0.55;
+        targetExplode = 0;
+        bloomPass.strength = 0.9;
+        infoPanel.classList.add('visible');
+        specsOverlay.classList.remove('visible');
+        infoPanel.querySelector('h3').textContent = 'Contenu';
+        infoPanel.querySelector('p').textContent = 'YubiKey 5C NFC integree. Cle physique obligatoire pour deverrouiller votre identite. Perte = destruction. Par conception.';
+        break;
+    }
+  }
+
+  function setupModeButtons() {
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => setMode(btn.dataset.mode));
+    });
+  }
+
+  // ===== CENTER LABEL =====
+  function showCenterLabel() {
+    const label = document.getElementById('center-label');
+    label.classList.add('visible');
+    setTimeout(() => label.classList.remove('visible'), 3000);
+    setTimeout(() => {
+      document.getElementById('info-panel').classList.add('visible');
+    }, 2000);
+  }
+
+  // ===== ANIMATION =====
+  function animate() {
+    requestAnimationFrame(animate);
+    const dt = clock.getDelta();
+    const elapsed = clock.getElapsedTime();
+    animTime += dt;
+
+    // Smooth camera (cinema/open modes)
+    if (currentMode === 'cinema' || currentMode === 'open') {
+      // Cinema auto-orbit
+      if (currentMode === 'cinema') {
+        const orbitRadius = 6;
+        const orbitSpeed = 0.15;
+        targetCamPos.x = Math.sin(elapsed * orbitSpeed) * orbitRadius;
+        targetCamPos.z = Math.cos(elapsed * orbitSpeed) * orbitRadius;
+        targetCamPos.y = 2 + Math.sin(elapsed * 0.1) * 0.3;
+      }
+
+      camera.position.lerp(targetCamPos, 0.02);
+      currentLookAt.lerp(targetLookAt, 0.02);
+      camera.lookAt(currentLookAt);
+    } else {
+      controls.update();
+    }
+
+    // Lid animation
+    lidAngle += (targetLidAngle - lidAngle) * 0.03;
+    if (lidGroup) {
+      const pivot = lidGroup.children[0]; // lidPivot
+      if (pivot) pivot.rotation.x = lidAngle;
+    }
+
+    // Explode animation
+    explodeFactor += (targetExplode - explodeFactor) * 0.03;
+    if (boxGroup) {
+      // Separate lid up
+      if (lidGroup) {
+        lidGroup.position.y = (BOX_H - LID_THICKNESS) + explodeFactor * 1.5;
+      }
+      // Body stays or moves down slightly
+      if (bodyGroup) {
+        bodyGroup.position.y = -explodeFactor * 0.3;
+      }
+    }
+
+    // Box subtle float
+    if (boxGroup) {
+      boxGroup.position.y = 0.6 + Math.sin(elapsed * 0.8) * 0.05;
+      boxGroup.rotation.y += (currentMode === 'cinema' ? 0 : 0) * dt; // no auto rotate
+    }
+
+    // Platform rotation
+    if (baseGroup) {
+      baseGroup.rotation.y = elapsed * 0.05;
+    }
+
+    // Particles drift
+    if (particles) {
+      const pos = particles.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const i3 = i * 3;
+        pos.array[i3] += Math.sin(elapsed + i) * 0.001;
+        pos.array[i3 + 1] += Math.cos(elapsed * 0.5 + i * 0.5) * 0.0005;
+        pos.array[i3 + 2] += Math.sin(elapsed * 0.7 + i * 0.3) * 0.001;
+      }
+      pos.needsUpdate = true;
+      particles.rotation.y = elapsed * 0.02;
+    }
+
+    // Render
+    composer.render();
+  }
+
+  // ===== RESIZE =====
+  function onResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  // ===== LAUNCH =====
+  window.addEventListener('DOMContentLoaded', init);
+
+})();
+</script>
+</body>
+</html>
