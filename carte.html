@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte d'Activation DARKUP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #080a0c;
+            color: #e0e0e0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Subtle grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 229, 200, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 200, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .logo-text {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #00e5c8;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: clamp(28px, 5vw, 44px);
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+
+        h1 span {
+            color: #00e5c8;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            font-weight: 300;
+            color: #6b7280;
+            letter-spacing: 0.5px;
+        }
+
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #00e5c8, #00b89c);
+            margin: 24px auto 0;
+            border-radius: 1px;
+        }
+
+        /* Card sections */
+        .card-section {
+            margin-bottom: 56px;
+        }
+
+        .card-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #00e5c8;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
+        .card-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(0, 229, 200, 0.1),
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(0, 229, 200, 0.04);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .card-wrapper:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                0 0 0 1px rgba(0, 229, 200, 0.2),
+                0 30px 80px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(0, 229, 200, 0.08);
+        }
+
+        .card-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Combined view */
+        .combined-section {
+            margin-top: 72px;
+            padding-top: 48px;
+            border-top: 1px solid rgba(0, 229, 200, 0.08);
+        }
+
+        .combined-label {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .combined-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(0, 229, 200, 0.06),
+                0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .combined-wrapper img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Specs */
+        .specs {
+            margin-top: 56px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1px;
+            background: rgba(0, 229, 200, 0.06);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .spec-item {
+            background: #0d1117;
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .spec-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .spec-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #00e5c8;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 64px;
+            text-align: center;
+            padding-top: 32px;
+            border-top: 1px solid rgba(0, 229, 200, 0.06);
+        }
+
+        footer a {
+            color: #00e5c8;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 1px;
+            transition: opacity 0.3s;
+        }
+
+        footer a:hover { opacity: 0.7; }
+
+        .footer-sub {
+            font-size: 12px;
+            color: #3b4252;
+            margin-top: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container { padding: 40px 16px 60px; }
+            .card-section { margin-bottom: 40px; }
+            .specs { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-text">DARKUP</div>
+            <h1>Carte d'<span>Activation</span></h1>
+            <p class="subtitle">Chiffrement E2E &middot; YubiKey PIV &middot; Usage unique</p>
+            <div class="divider"></div>
+        </header>
+
+        <div class="card-section">
+            <div class="card-label">Recto</div>
+            <div class="card-wrapper">
+                <img src="darkup-carte-recto.png" alt="DARKUP Carte d'Activation - Recto">
+            </div>
+        </div>
+
+        <div class="card-section">
+            <div class="card-label">Verso</div>
+            <div class="card-wrapper">
+                <img src="darkup-carte-verso.png" alt="DARKUP Carte d'Activation - Verso (QR Code & Code d'activation)">
+            </div>
+        </div>
+
+        <div class="specs">
+            <div class="spec-item">
+                <div class="spec-label">Format</div>
+                <div class="spec-value">ISO/IEC 7810 ID-1</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Dimensions</div>
+                <div class="spec-value">85.6 x 53.98 mm</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Resolution</div>
+                <div class="spec-value">300 DPI</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Chiffrement</div>
+                <div class="spec-value">E2E-256 / PIV</div>
+            </div>
+        </div>
+
+        <div class="combined-section">
+            <div class="combined-label">Vue d'ensemble</div>
+            <div class="combined-wrapper">
+                <img src="darkup-carte-activation.png" alt="DARKUP Carte d'Activation - Recto et Verso">
+            </div>
+        </div>
+
+        <footer>
+            <a href="https://darkup.io" target="_blank">darkup.io</a>
+            <p class="footer-sub">DARKUP &copy; 2026 &middot; Design v2.0</p>
+        </footer>
+    </div>
+</body>
+</html>
